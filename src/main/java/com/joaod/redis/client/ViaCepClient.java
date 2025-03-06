@@ -1,7 +1,6 @@
-package client;
+package com.joaod.redis.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import config.WebClientConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
