@@ -5,6 +5,7 @@ import com.joaod.redis.client.ViaCepClient;
 import com.joaod.redis.dto.CepResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -19,9 +20,21 @@ public class ViaCepService {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private RedisCacheService redisCacheService;
+
     public Mono<CepResponse> findByCep(String cep) {
-        return viaCepClient.findByCep(cep)
-                .flatMap(this::convertCepResponseToMono);
+        return redisCacheService
+                .exists(cep)
+                .flatMap(exists -> {
+                    if (exists) {
+                        return redisCacheService.get(cep);
+                    } else {
+                        return viaCepClient
+                                .findByCep(cep)
+                                .flatMap(cepResponse -> redisCacheService.save(cep, cepResponse));
+                    }
+                }).flatMap(this::convertCepResponseToMono);
 
     }
 

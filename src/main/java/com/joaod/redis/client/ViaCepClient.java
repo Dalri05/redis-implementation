@@ -27,13 +27,12 @@ public class ViaCepClient {
                 .retrieve()
                 .bodyToMono(String.class)
                 .onErrorResume(throwable -> {
-                    log.error(throwable.getMessage(), throwable);
+                    System.out.println(throwable.getMessage());
                     return Mono.empty();
                 })
                 .doOnNext(response -> {
-                    log.info("Retornando dados do viaCep", cep, response);
+                    System.out.println("Retornando dados do viaCep");
                 });
-
     }
 
     public String buildUri(String cep) {
